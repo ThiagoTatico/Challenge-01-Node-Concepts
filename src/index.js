@@ -79,15 +79,30 @@ app.put('/todos/:id', checksExistsUserAccount, (req, res) => {
   return res.json(todo);
 });
 
-
 app.patch('/todos/:id/done', checksExistsUserAccount, (req, res) => {
-  
-});
+  const { user } = req;
+  const { id } = req.params;
 
+  const todo = user.todos.find(todo => todo.id === id);
+
+  if(!todo) return res.status(404).json( { error: 'Todo not found' } );
+
+  todo.done = true;
+
+  return res.json(todo);
+});
 
 app.delete('/todos/:id', checksExistsUserAccount, (req, res) => {
-  
-});
+  const { user } = req;
+  const { id } = req.params;
 
+  const todoIndex = user.todos.findIndex(todo => todo.id === id);
+
+  if(todoIndex === -1) return res.status(404).json( { error: 'Todo not found' } );
+
+  user.todos.splice(todoIndex, 1);
+
+  return res.status(204).json();
+});
 
 module.exports = app;
